@@ -13,7 +13,7 @@
           The votes are stored as transactions/entries in a second permissioned ledger blockchain network. This ledger can be read by anyone but adding to the ledger requires permission. Since the biometric information is the mode of authentication, people cannot identify who the votes were cast by. 
           Once the election is over, the votes can be counted instantaneously and the results announced within a short interval of time. All permissions and ownerships rest with the Election Commission of India. The model can be used by any other central authority conducting elections too.
 </p>
-<b> Detailed Idea : </b>
+<b> Detailed Idea : </b> <br>
   Phase 1: PRE-ELECTION
           We plan on using the Aadhar card information to create a digital ID which has all information ranging from voting constituency to biometrics, the constituency will be determined using the Aadhar address. To identify each eligible voter we create a permissioned ledger blockchain network which comes to a consensus of which voters are eligible to vote. The voters information is stored in the ledger which does disallows anyone from tampering with the list of eligible voters. The ledger is limited to a single constituency, so each constituency has its own network and ledger of eligible voters. This system allows us to monitor citizens of a particular constituency and create/store a digital ID as soon as they become eligible(turn 18), it also solves the problem of name missing from the voters list. <br>  
   Phase 2: ELECTION
