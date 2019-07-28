@@ -1,11 +1,11 @@
 # Codefundo_2019
 
 Major problems in the current election system :
-<ul>
-    <li> 1. People not currently living  in their constituency have to travel a lot to vote </li>
-    <li> 2. Amount of money, time and effort spent with transportation of the EVMs to counting center. Counting votes from each EVM is time taking and hence the time taken for announcing the result increases. </li>
-    <li> 3. Labour required to verify voters name in the list(i.e whether voter belongs to that constituency) </li>
-</ul>
+<ol>
+    <li> People not currently living  in their constituency have to travel a lot to vote </li>
+    <li> Amount of money, time and effort spent with transportation of the EVMs to counting center. Counting votes from each EVM is time taking and hence the time taken for announcing the result increases. </li>
+    <li> Labour required to verify voters name in the list(i.e whether voter belongs to that constituency) </li>
+</ol>
 
 Solution Outline :
           We plan to integrate the Aadhar card information, mainly the biometrics with the voting process. The biometric information will be used to authenticate the voters. The information will be stored in a permissioned ledger blockchain network. Through this voters can just go to their nearest voting booth and cast their vote from anywhere in the country. 
