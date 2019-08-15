@@ -2,6 +2,13 @@ import React, { Component } from "react";
 import Web3 from "web3";
 import TruffleContract from "truffle-contract";
 import IndianElection from "../../build/contracts/IndianElection.json";
+import AdminLogin from "../pages/adminLogin";
+import Constitution from "../pages/constitution";
+import Home from "../pages/home";
+import Thankyou from "../pages/thankyou";
+import VoterLogin from "../pages/login";
+import Vote from "../pages/vote";
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -10,7 +17,8 @@ class App extends Component {
       candidates: [],
       hasVoted: false,
       loading: true,
-      voting: false
+      voting: false,
+      pageIndex: 5
     };
     if (typeof web3 != "undefined") {
       this.web3Provider = web3.currentProvider;
@@ -55,11 +63,19 @@ class App extends Component {
     });
   }
   render() {
-    return (
-      <div>
-        <h1>My React App!</h1>
-      </div>
-    );
+    if (this.state.pageIndex == 0) {
+      return <AdminLogin />;
+    } else if (this.state.pageIndex == 1) {
+      return <Constitution mycon={this.election} />;
+    } else if (this.state.pageIndex == 2) {
+      return <VoterLogin />;
+    } else if (this.state.pageIndex == 3) {
+      return <Vote />;
+    } else if (this.state.pageIndex == 4) {
+      return <Home />;
+    } else {
+      return <Thankyou />;
+    }
   }
 }
 
