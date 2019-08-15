@@ -1,5 +1,5 @@
 pragma solidity ^0.5.0;
-pragma experimental ABIEncoderV2;
+
 
 contract IndianElection{
 
@@ -110,13 +110,14 @@ contract IndianElection{
         candidatesInformation[constituencyId].push(ElectionCandidate);
         constituencyList[constituencyId].candidateCount += 1;
     }
+    /*
     function returnCandidateInfo(uint constituencyId,uint candidateId) public view returns (Candidate memory){
         return candidatesInformation[constituencyId][candidateId];
     }
     
     function returnContituencyInfo(uint constituencyId) public view returns (Constituency memory){
         return constituencyList[constituencyId];
-    }
+    }*/
 
     // Step 3 : initialize the voting list
     function addVoterToList(uint aadhaarNo, string memory fingerPrint, string memory retinaInfo, uint constituencyId) public
@@ -130,7 +131,7 @@ contract IndianElection{
     function verifyVoter(uint aadhaarNo, string memory fingerPrint, string memory retinaInfo, uint constituencyId) public view returns (bool)
     {
         // Voter has not voted before
-        require(!voterEntry[aadhaarNo], "Error");
+        require(!voterEntry[aadhaarNo], "Voter err");
         DigitalId memory temp = voterList[aadhaarNo];
         // Comparision through keccak256() instead of iterating to save time and gas cost
 
@@ -144,7 +145,7 @@ contract IndianElection{
     // Step 5 : Vote for a candidate
     function vote(uint _candidateId, uint adhaarNo, uint constituencyId) public
     {
-        require(!voterEntry[adhaarNo]);
+        require(!voterEntry[adhaarNo], "Voter err1");
         
         // Mark the user has now voted
         voterEntry[adhaarNo] = true;
