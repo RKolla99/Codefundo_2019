@@ -112,18 +112,18 @@ export default class VoterLogin extends React.Component {
     } else {
       var aadharNumber = document.getElementById("aadhar1").value;
       aadharNumber += document.getElementById("aadhar2").value;
-      aadharNumber += document.getElementById("aadhar3").value;
+      (aadharNumber += document.getElementById("aadhar3").value), 10;
+      aadharNumber = parseInt(aadharNumber, 10);
 
-      const const_id = document.getElementById("const_id").value;
+      const const_id = parseInt(document.getElementById("const_id").value, 10);
       const hasVoted = await this.electionInstance.voterEntry(aadharNumber);
       if (!hasVoted) {
         const verify = await this.electionInstance.verifyVoter(
           aadharNumber,
-          this.state.fingerprint,
-          this.state.retina,
+          parseInt(this.state.fingerprint, 10),
+          parseInt(this.state.retina, 10),
           const_id
         );
-
         if (verify) {
           this.setState({
             aadhar: aadharNumber,
