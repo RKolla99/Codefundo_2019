@@ -16,11 +16,18 @@ const buttonStyle = {
 };
 
 export default class Home extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {};
+    this.voterLogin = this.voterLogin.bind(this);
+    this.adminLogin = this.adminLogin.bind(this);
   }
-
+  voterLogin() {
+    this.props.changePage(2);
+  }
+  adminLogin() {
+    this.props.changePage(1);
+  }
   render() {
     return (
       <div style={{ paddingTop: "20%" }}>
@@ -33,10 +40,14 @@ export default class Home extends React.Component {
           <br />
           <div className="text-center">
             <div style={buttonStyle}>
-              <Button className="btn-success">Voter Login</Button>
+              <Button className="btn-success" onClick={this.voterLogin}>
+                Voter Login
+              </Button>
             </div>
             <div style={buttonStyle}>
-              <Button className="btn-primary">Admin Login</Button>
+              <Button className="btn-primary" onClick={this.adminLogin}>
+                Admin Login
+              </Button>
             </div>
           </div>
         </div>

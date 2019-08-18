@@ -29,16 +29,31 @@ const containerStyle = {
 };
 
 export default class VoterLogin extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       showScannerModal: false,
-      validUser: false
+      validUser: false,
+      web3: this.props.myweb3,
+      userNotMatch: false,
+      hasVoted: false
     };
     this.scannerModal = this.scannerModal.bind(this);
     this.toggle = this.toggle.bind(this);
+    this.toggleUserNotMatch = this.toggleUserNotMatch.bind(this);
     this.saveScan = this.saveScan.bind(this);
     this.submit = this.submit.bind(this);
+    this.election = this.props.mycon;
+    this.toggleHasVoted = this.toggleHasVoted.bind(this);
+  }
+
+  componentDidMount() {
+    this.state.web3.eth.getCoinbase((err, account) => {
+      this.setState({ account });
+      this.election.deployed().then(electionInstance => {
+        this.electionInstance = electionInstance;
+      });
+    });
   }
 
   scannerModal(event) {
@@ -58,6 +73,16 @@ export default class VoterLogin extends React.Component {
     }));
   }
 
+  toggleUserNotMatch() {
+    this.setState({
+      userNotMatch: false
+    });
+    document.getElementById("aadhar1").value = "";
+    document.getElementById("aadhar2").value = "";
+    document.getElementById("aadhar3").value = "";
+    document.getElementById("const_id").value = "";
+  }
+
   saveScan(event) {
     const scanVal = document.getElementById("scan").value;
     if (this.state.tempScan === "fingerprint") {
@@ -73,8 +98,12 @@ export default class VoterLogin extends React.Component {
       showScannerModal: false
     });
   }
+  toggleHasVoted() {
+    this.setState({ hasVoted: false });
+    this.props.pageindex(4);
+  }
 
-  submit() {
+  async submit() {
     if (this.state.fingerprint === undefined) {
       console.error("Fingerprint not scanned!!");
     }
@@ -85,11 +114,33 @@ export default class VoterLogin extends React.Component {
       aadharNumber += document.getElementById("aadhar2").value;
       aadharNumber += document.getElementById("aadhar3").value;
 
-      this.setState({
-        aadhar: aadharNumber,
-        validUser: true //uncomment line while testing
-      });
+      const const_id = document.getElementById("const_id").value;
+      const hasVoted = await this.electionInstance.voterEntry(aadharNumber);
+      if (!hasVoted) {
+        const verify = await this.electionInstance.verifyVoter(
+          aadharNumber,
+          this.state.fingerprint,
+          this.state.retina,
+          const_id
+        );
 
+        if (verify) {
+          this.setState({
+            aadhar: aadharNumber,
+            validUser: true //uncomment line while testing
+          });
+          this.props.aadhar(aadharNumber);
+          this.props.pageindex(3);
+          this.props.constid(const_id);
+        } else {
+          this.setState({
+            userNotMatch: true
+          });
+        }
+      } else {
+        this.setState({ hasVoted: true });
+        // alert("Already voted");
+      }
       //Verify user and set this.state.validUser to "true" to redirect to voting page..
     }
   }
@@ -140,7 +191,21 @@ export default class VoterLogin extends React.Component {
                 />
               </InputGroup>
             </div>
-
+            <br />
+            <div>
+              <InputGroup>
+                <Label for="const_id" style={labelStyle}>
+                  Constituency ID
+                </Label>
+                <input
+                  id="const_id"
+                  placeholder="XXXX"
+                  style={inputStyle}
+                  size="4"
+                  maxLength="4"
+                />
+              </InputGroup>
+            </div>
             <br />
             <div>
               <InputGroup>
@@ -204,6 +269,33 @@ export default class VoterLogin extends React.Component {
               </Button>
             </div>
           </div>
+          {this.state.userNotMatch && (
+            <div>
+              <Modal isOpen={this.state.userNotMatch}>
+                <ModalHeader> Details does not match!! </ModalHeader>
+                <ModalFooter>
+                  <Button
+                    className="btn-retry"
+                    onClick={this.toggleUserNotMatch}
+                  >
+                    Retry
+                  </Button>
+                </ModalFooter>
+              </Modal>
+            </div>
+          )}
+          {this.state.hasVoted && (
+            <div>
+              <Modal isOpen={this.state.hasVoted}>
+                <ModalHeader> You've already voted!! </ModalHeader>
+                <ModalFooter>
+                  <Button className="btn-retry" onClick={this.toggleHasVoted}>
+                    Return home
+                  </Button>
+                </ModalFooter>
+              </Modal>
+            </div>
+          )}
         </div>
       </div>
     );

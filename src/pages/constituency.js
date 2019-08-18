@@ -111,14 +111,13 @@ class Constituency extends React.Component {
   }
 
   async submit() {
-    alert(this.state.constitution.const_id);
     this.confirmSubmitToggle();
     var size = Object.keys(this.state.candidates).length;
     var i;
-    for (i = 1; i <= size; i++) {
+    for (i = 0; i < size; i++) {
       await this.electionInstance.addCandidate(
         this.state.constitution.const_id,
-        i - 1,
+        i,
         this.state.candidates[i],
         { from: this.state.account }
       );
