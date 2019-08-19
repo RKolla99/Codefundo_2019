@@ -35,12 +35,12 @@ contract IndianElection{
 
     // Voter List
     mapping(uint => DigitalId) public voterList;
-    uint public eligibleVoters;
-
+    
     // Mapping to store voters who have voted (adhaar to boolean)
     // This is for all constituencies(entire country)
     mapping(uint => bool) public voterEntry;
-
+    // Mapping to store the users who passed verification
+    mapping(uint => bool) public verfiedVoter;
     // Constituency model
 
     struct Constituency {
@@ -53,6 +53,9 @@ contract IndianElection{
     mapping(uint => Constituency) public constituencyList;
     // ConstituencyId -> Candidates Array
     mapping(uint => Candidate[]) public candidatesInformation; 
+
+    mapping(string => bytes32) adminCredentials;
+
     // constructor function
     constructor() public
     {
@@ -95,6 +98,17 @@ contract IndianElection{
         else
             return ResponseMessage;
     }
+    function addAdmin(string memory username, string memory password) public
+    {
+        adminCredentials[username] = keccak256(abi.encodePacked(password));
+    }
+
+    function verifyAdmin(string memory username, string memory password) public view returns (bool)
+    {
+        bytes32 stored = adminCredentials[username];
+        bytes32 given = keccak256(abi.encodePacked(password));
+        return stored == given;
+    }
 
     // Step 1 : adding all existing constituencies with candidates info
     function addConstituency(uint constituencyId, string memory constituencyName, uint candidateCount) public
@@ -119,10 +133,9 @@ contract IndianElection{
     {
         voterEntry[aadhaarNo] = false;
         voterList[aadhaarNo] = DigitalId(aadhaarNo, fingerPrint, retinaInfo, constituencyId);
-        eligibleVoters += 1;
     }
 
-    // Step 4 : Verify the details of the voter
+    // Step 4 : Verify the details of the voter and set the user as verified
     function verifyVoter(uint aadhaarNo,uint fingerPrint,uint retinaInfo, uint constituencyId) public view returns (bool)
     {
         // Voter has not voted before
@@ -137,9 +150,19 @@ contract IndianElection{
         // Iterate through the eligle voter info and check if there is a match
     }
 
+    function setVerifiedVoter(uint aadhaarNo,uint fingerPrint,uint retinaInfo, uint constituencyId) public{
+        if(verifyVoter(aadhaarNo, fingerPrint, retinaInfo, constituencyId)){
+            verfiedVoter[aadhaarNo] = true;
+        }
+    }
+
     // Step 5 : Vote for a candidate
     function vote(uint _candidateId, uint adhaarNo, uint constituencyId) public
     {
+        // Check if the user has verified 
+        require(verfiedVoter[adhaarNo]);
+
+        // Check if the user has voted before;
         require(!voterEntry[adhaarNo]);
         
         // Mark the user has now voted
@@ -152,6 +175,21 @@ contract IndianElection{
     function returnVoteCount(uint _candidateId, uint constituencyId) public view returns (uint)
     {
         return candidatesInformation[constituencyId][_candidateId].candidateVoteCount ;
+    }
+
+    // Step 6 : Results for a particular constituentcy
+    function returnWinner(uint constituencyId) public view returns (string memory){
+        uint candidateCount = constituencyList[constituencyId].candidateCount;
+        uint maxVoteCount = 0;
+        uint winnerId;
+        for (uint i=0; i<candidateCount; i++) {
+             
+             if(candidatesInformation[constituencyId][i].candidateVoteCount > maxVoteCount){
+                    winnerId = i;
+                    maxVoteCount = candidatesInformation[constituencyId][i].candidateVoteCount;
+             }
+        }
+        return candidatesInformation[constituencyId][winnerId].candidateName;
     }
 
 }

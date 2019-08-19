@@ -1,4 +1,13 @@
 import React from "react";
+import {
+  InputGroup,
+  Button,
+  Label,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
+} from "reactstrap";
 //import { Redirect } from 'react-router-dom';
 
 const style = {
@@ -15,22 +24,56 @@ const groupStyle = {
 };
 
 export default class AdminLogin extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      validAdmin: false
+      userNotValid: false,
+      web3: this.props.myweb3
     };
     this.login = this.login.bind(this);
+    this.election = this.props.mycon;
+    this.toggleUserNotValid = this.toggleUserNotValid.bind(this);
+    // this.testing = this.testing.bind(this);
   }
 
-  login() {
-    this.setState({
-      username: document.getElementById("username").value,
-      password: document.getElementById("password").value,
-      validAdmin: true //uncomment line while testing
+  componentDidMount() {
+    this.state.web3.eth.getCoinbase((err, account) => {
+      this.setState({ account });
+      this.election.deployed().then(electionInstance => {
+        this.electionInstance = electionInstance;
+      });
     });
+  }
 
+  // testing() {
+  //   alert(this.state.username);
+  //   alert(this.state.password);
+  // }
+
+  login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    // this.setState({
+    //   username: document.getElementById("username").value,
+    //   password: document.getElementById("password").value
+    // });
+    // this.testing();
+    this.electionInstance
+      .verifyAdmin(String(username), String(password))
+      .then(isValid => {
+        if (isValid) {
+          this.props.changePage(7);
+        } else {
+          this.setState({ userNotValid: true });
+        }
+      });
     //Verify admin and set this.state.validAdmin to "true" to redirect to admin page..
+  }
+
+  toggleUserNotValid() {
+    this.setState({ userNotValid: false });
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
   }
 
   render() {
@@ -68,6 +111,18 @@ export default class AdminLogin extends React.Component {
             </button>
           </div>
         </div>
+        {this.state.userNotValid && (
+          <div>
+            <Modal isOpen={this.state.userNotValid}>
+              <ModalHeader> Username or password is incorrect! </ModalHeader>
+              <ModalFooter>
+                <Button className="btn-retry" onClick={this.toggleUserNotValid}>
+                  Retry
+                </Button>
+              </ModalFooter>
+            </Modal>
+          </div>
+        )}
       </div>
     );
   }

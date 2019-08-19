@@ -26,7 +26,7 @@ export default class Home extends React.Component {
     this.props.changePage(2);
   }
   adminLogin() {
-    this.props.changePage(1);
+    this.props.changePage(0);
   }
   render() {
     return (

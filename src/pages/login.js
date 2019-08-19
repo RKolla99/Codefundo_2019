@@ -125,6 +125,15 @@ export default class VoterLogin extends React.Component {
           const_id
         );
         if (verify) {
+          await this.electionInstance.setVerifiedVoter(
+            aadharNumber,
+            parseInt(this.state.fingerprint, 10),
+            parseInt(this.state.retina, 10),
+            const_id,
+            {
+              from: this.state.account
+            }
+          );
           this.setState({
             aadhar: aadharNumber,
             validUser: true //uncomment line while testing

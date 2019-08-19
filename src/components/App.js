@@ -8,7 +8,8 @@ import Home from "../pages/home";
 import Thankyou from "../pages/thankyou";
 import VoterLogin from "../pages/login";
 import Vote from "../pages/vote";
-
+import Results from "../pages/results";
+import AdminOption from "../pages/adminOption";
 class App extends Component {
   constructor(props) {
     super(props);
@@ -37,6 +38,8 @@ class App extends Component {
     this.changeAadhar = this.changeAadhar.bind(this);
 
     this.changeConstId = this.changeConstId.bind(this);
+    this.startTime = Date.now();
+    this.duration = 5;
   }
 
   componentDidMount() {
@@ -62,6 +65,7 @@ class App extends Component {
       return (
         <AdminLogin
           mycon={this.election}
+          myweb3={this.web3}
           account={this.state.account}
           changePage={this.changePage}
         />
@@ -96,8 +100,20 @@ class App extends Component {
       );
     } else if (this.state.pageIndex == 4) {
       return <Home changePage={this.changePage} />;
-    } else {
+    } else if (this.state.pageIndex == 5) {
       return <Thankyou mycon={this.election} changePage={this.changePage} />;
+    } else if (this.state.pageIndex == 6) {
+      return (
+        <Results
+          mycon={this.election}
+          myweb3={this.web3}
+          changePage={this.changePage}
+          startTime={this.startTime}
+          duration={this.duration}
+        />
+      );
+    } else if (this.state.pageIndex == 7) {
+      return <AdminOption changePage={this.changePage} />;
     }
   }
 }
