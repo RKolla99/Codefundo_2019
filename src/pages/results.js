@@ -23,6 +23,7 @@ export default class Results extends React.Component {
     this.showWinner = this.showWinner.bind(this);
     this.getWinnerName = this.getWinnerName.bind(this);
     this.election = this.props.mycon;
+    this.goHome = this.goHome.bind(this);
   }
   componentDidMount() {
     this.state.web3.eth.getCoinbase((err, account) => {
@@ -70,6 +71,10 @@ export default class Results extends React.Component {
     }
   }
 
+  goHome() {
+    this.props.changePage(4);
+  }
+
   render() {
     return (
       <div>
@@ -103,7 +108,11 @@ export default class Results extends React.Component {
               Check Results
             </Button>
 
-            <Button className="btn-primary" style={{ margin: "5px" }}>
+            <Button
+              className="btn-primary"
+              style={{ margin: "5px" }}
+              onClick={this.goHome}
+            >
               Home Page
             </Button>
           </div>

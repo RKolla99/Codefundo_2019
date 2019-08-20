@@ -7,7 +7,8 @@ const centerStyle = {
   paddingTop: "20px",
   overflow: "auto",
   width: "500px",
-  boxShadow: "0px 5px 10px 2px #000"
+  // boxShadow: "0px 5px 10px 2px #000"
+  background: "#fff"
 };
 
 const buttonStyle = {
@@ -33,8 +34,8 @@ export default class Home extends React.Component {
       <div style={{ paddingTop: "20%" }}>
         <div style={centerStyle} className="">
           <div className="text-center">
-            <h1 className="display-4" style={{ fontFamily: "monospace" }}>
-              Name of App
+            <h1 className="display-4" style={{ fontFamily: "sans-serif" }}>
+              Indian Elections
             </h1>
           </div>
           <br />

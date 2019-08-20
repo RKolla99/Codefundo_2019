@@ -14,11 +14,13 @@ import {
 // import {Link} from 'react-router-dom';
 
 const constitutionStyle = {
-  width: "60%",
-  margin: "10px auto 5px auto",
+  width: "500px",
+  margin: "auto",
+  marginTop: "20%",
   padding: "10px 10px 10px 10px",
   // border: '1px black solid',
-  boxShadow: "0px 5px 10px 2px #000"
+  // boxShadow: "0px 5px 10px 2px #000",
+  background: "#fff"
 };
 
 const labelStyle = {
@@ -59,6 +61,7 @@ class Constituency extends React.Component {
     this.confirmSubmit = this.confirmSubmit.bind(this);
     this.confirmSubmitToggle = this.confirmSubmitToggle.bind(this);
     this.election = this.props.mycon;
+    this.goHome = this.goHome.bind(this);
     // this.watchEvents = this.watchEvents.bind(this);
   }
 
@@ -69,6 +72,10 @@ class Constituency extends React.Component {
         this.electionInstance = electionInstance;
       });
     });
+  }
+
+  goHome() {
+    this.props.changePage(4);
   }
 
   addConstituency() {
@@ -156,7 +163,6 @@ class Constituency extends React.Component {
 
     return (
       <div>
-        <h1>{this.state.account}</h1>
         {this.state.showConstitutionDetails && (
           <div id="constitution_details" style={constitutionStyle}>
             <Label for="const_name" style={labelStyle}>
@@ -203,12 +209,14 @@ class Constituency extends React.Component {
           {this.state.addCandidate &&
             Object.keys(this.state.candidates).length > 0 && (
               <div className="float-right" style={{ width: "50%" }}>
-                <div style={{ width: "60%", margin: "auto" }}>
+                <div
+                  style={{ width: "60%", margin: "auto", background: "#fff" }}
+                >
                   <Table hover>
                     <thead>
                       <tr>
                         <td>Sl No.</td>
-                        <td>Candidate Name</td>
+                        <td className="text-center">Candidate Name</td>
                       </tr>
                     </thead>
                     <tbody>{candidates_arr}</tbody>
@@ -257,7 +265,15 @@ class Constituency extends React.Component {
             <div>
               <Modal isOpen={true}>
                 <ModalHeader>Details Saved Successfully!</ModalHeader>
-                <ModalFooter>Return to home</ModalFooter>
+                <ModalFooter>
+                  <Button
+                    className="btn-success"
+                    size="sm"
+                    onClick={this.goHome}
+                  >
+                    Return Home
+                  </Button>
+                </ModalFooter>
               </Modal>
             </div>
           )}

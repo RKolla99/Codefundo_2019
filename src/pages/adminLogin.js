@@ -13,14 +13,16 @@ import {
 const style = {
   margin: "auto auto auto auto",
   padding: "10px 5px 15px 5px"
+
   // boxShadow: '0px 5px 10px 2px #000'
 };
 
 const groupStyle = {
   margin: "10px auto 10px auto",
   padding: "10px 5px 15px 5px",
-  boxShadow: "0px 5px 10px 2px #000",
-  width: "400px"
+  // boxShadow: "0px 5px 10px 2px #000",
+  width: "400px",
+  background: "#fff"
 };
 
 export default class AdminLogin extends React.Component {
@@ -86,7 +88,7 @@ export default class AdminLogin extends React.Component {
     return (
       <div style={style} className="text-center">
         <div>
-          <h2 className="text-center" style={{ fontFamily: "monospace" }}>
+          <h2 className="text-center" style={{ fontFamily: "sans-serif" }}>
             Sign In to add Constituencies and Candidates
           </h2>
         </div>

@@ -16,7 +16,8 @@ const tableDivStyle = {
   padding: "10px",
   margin: "10px auto 10px auto",
   boxShadow: "0px 5px 15px 2px #000",
-  width: "70%"
+  width: "70%",
+  background: "#fff"
 };
 
 export default class Vote extends React.Component {
@@ -140,7 +141,7 @@ export default class Vote extends React.Component {
     return (
       <div>
         <div style={{ marginTop: "15px" }}>
-          <h2 className="text-center">Vote for your favourite candidate</h2>
+          <h2 className="text-center">Please cast your vote</h2>
         </div>
         <br />
         <div style={tableDivStyle}>

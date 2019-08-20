@@ -12,7 +12,8 @@ const candidateStyle = {
   margin: "10px auto 15px auto",
   padding: "10px 10px 10px 10px",
   // border: '1px black solid',
-  boxShadow: "0px 5px 10px 2px #000"
+  // boxShadow: "0px 5px 10px 2px #000"
+  background: "#fff"
 };
 
 export default class AddCandidate extends React.Component {
@@ -30,7 +31,7 @@ export default class AddCandidate extends React.Component {
         <input id="cand_name" />
         <br />
         <Label for="cand_id" style={labelStyle}>
-          Caandidate ID
+          Candidate ID
         </Label>
         <input id="cand_id" />
         <br />

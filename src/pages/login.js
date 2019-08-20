@@ -9,7 +9,7 @@ import {
   ModalFooter
 } from "reactstrap";
 // import { Redirect } from "react-router-dom";
-
+import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 const labelStyle = {
   display: "inline-block",
   width: "140px",
@@ -24,8 +24,9 @@ const inputStyle = {
 const containerStyle = {
   margin: "10px auto 10px auto",
   padding: "10px 5px 15px 5px",
-  boxShadow: "0px 5px 10px 2px #000",
-  width: "500px"
+  // boxShadow: "0px 5px 10px 2px #000",
+  width: "500px",
+  background: "#fff"
 };
 
 export default class VoterLogin extends React.Component {
@@ -229,6 +230,11 @@ export default class VoterLogin extends React.Component {
                   {" "}
                   SCAN{" "}
                 </Button>
+                {this.state.fingerprint && (
+                  <div style={{ paddingTop: "5px", width: "30px" }}>
+                    <IoIosCheckmarkCircleOutline size="30" />
+                  </div>
+                )}
               </InputGroup>
             </div>
             <br />
@@ -237,10 +243,20 @@ export default class VoterLogin extends React.Component {
                 <Label for="scan_retina" style={labelStyle}>
                   Retina
                 </Label>
-                <Button id="scan_retina" size="sm" onClick={this.scannerModal}>
+                <Button
+                  id="scan_retina"
+                  size="sm"
+                  onClick={this.scannerModal}
+                  style={{ marginRight: "2px" }}
+                >
                   {" "}
                   SCAN{" "}
                 </Button>
+                {this.state.retina && (
+                  <div style={{ paddingTop: "5px", width: "30px" }}>
+                    <IoIosCheckmarkCircleOutline size="30" />
+                  </div>
+                )}
               </InputGroup>
             </div>
             <div>
