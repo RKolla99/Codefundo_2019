@@ -1,4 +1,4 @@
-# Codefundo_2019
+# Secure Election - Codefundo_2019
 
 ### <b> Solution Outline : </b>
 <p>
