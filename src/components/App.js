@@ -10,6 +10,8 @@ import VoterLogin from "../pages/login";
 import Vote from "../pages/vote";
 import Results from "../pages/results";
 import AdminOption from "../pages/adminOption";
+import FileUpload from "../pages/fileUpload";
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -19,9 +21,11 @@ class App extends Component {
       hasVoted: false,
       loading: true,
       voting: false,
-      pageIndex: 4,
+      pageIndex: 8,
       aadharNumber: 0,
-      constId: 0
+      constId: 0,
+      memeHash: "",
+      buffer: null
     };
     if (typeof web3 != "undefined") {
       this.web3Provider = web3.currentProvider;
@@ -38,8 +42,17 @@ class App extends Component {
     this.changeAadhar = this.changeAadhar.bind(this);
 
     this.changeConstId = this.changeConstId.bind(this);
+    this.setBuffer = this.setBuffer.bind(this);
+    this.getBuffer = this.getBuffer.bind(this);
     this.startTime = Date.now();
     this.duration = 5;
+
+    this.ipfsClient = require("ipfs-http-client");
+    this.ipfs = this.ipfsClient({
+      host: "ipfs.infura.io",
+      port: 5001,
+      protocol: "https"
+    });
   }
 
   componentDidMount() {
@@ -60,6 +73,15 @@ class App extends Component {
       pageIndex: newIndex
     });
   }
+
+  setBuffer(Data) {
+    this.setState({ buffer: Data });
+  }
+
+  getBuffer() {
+    return this.state.buffer;
+  }
+
   render() {
     if (this.state.pageIndex == 0) {
       return (
@@ -114,6 +136,15 @@ class App extends Component {
       );
     } else if (this.state.pageIndex == 7) {
       return <AdminOption changePage={this.changePage} />;
+    } else if (this.state.pageIndex == 8) {
+      return (
+        <FileUpload
+          changePage={this.changePage}
+          ipfs={this.ipfs}
+          setBuffer={this.setBuffer}
+          getBuffer={this.getBuffer}
+        />
+      );
     }
   }
 }
