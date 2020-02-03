@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Web3 from "web3";
 import TruffleContract from "truffle-contract";
 import IndianElection from "../../build/contracts/IndianElection.json";
+import myElection from "../../build/contracts/Elections.json";
 import AdminLogin from "../pages/adminLogin";
 import Constituency from "../pages/constituency";
 import Home from "../pages/home";
@@ -21,7 +22,7 @@ class App extends Component {
       hasVoted: false,
       loading: true,
       voting: false,
-      pageIndex: 8,
+      pageIndex: 3,
       aadharNumber: 0,
       constId: 0,
       memeHash: "",
@@ -37,6 +38,8 @@ class App extends Component {
 
     this.web3 = new Web3(this.web3Provider);
     this.election = TruffleContract(IndianElection);
+    // alert(this.election);
+    alert("Hello");
     this.election.setProvider(this.web3Provider);
     this.changePage = this.changePage.bind(this);
     this.changeAadhar = this.changeAadhar.bind(this);
@@ -46,13 +49,6 @@ class App extends Component {
     this.getBuffer = this.getBuffer.bind(this);
     this.startTime = Date.now();
     this.duration = 5;
-
-    this.ipfsClient = require("ipfs-http-client");
-    this.ipfs = this.ipfsClient({
-      host: "ipfs.infura.io",
-      port: 5001,
-      protocol: "https"
-    });
   }
 
   componentDidMount() {
@@ -140,7 +136,6 @@ class App extends Component {
       return (
         <FileUpload
           changePage={this.changePage}
-          ipfs={this.ipfs}
           setBuffer={this.setBuffer}
           getBuffer={this.getBuffer}
         />

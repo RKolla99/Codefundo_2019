@@ -1,6 +1,7 @@
 import React from "react";
 // import {Link} from 'react-router-dom';
 import { Button } from "reactstrap";
+import axios from "axios";
 
 const centerStyle = {
   margin: "auto",
@@ -15,12 +16,14 @@ const buttonStyle = {
   display: "inline-block",
   padding: "10px"
 };
+
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
   host: "ipfs.infura.io",
   port: 5001,
   protocol: "https"
 });
+
 export default class fileUpload extends React.Component {
   constructor(props) {
     super(props);
@@ -48,7 +51,13 @@ export default class fileUpload extends React.Component {
       console.log("buffer", this.props.getBuffer());
     };
   }
+  async componentDidMount() {
+    const res = await axios.get(
+      "https://ipfs.infura.io/ipfs/QmS4Vy1kqQ2Q6PHsjULrWfqp5ZdXaDE7R8TL1uaV4WYTV9"
+    );
 
+    alert(res.data);
+  }
   onSubmit(event) {
     console.log(this.props.ipfs);
     console.log(ipfs);

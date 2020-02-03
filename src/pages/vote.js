@@ -50,20 +50,31 @@ export default class Vote extends React.Component {
       this.setState({ account });
     });
     this.electionInstance = await this.election.deployed();
-    const constituency = await this.electionInstance.constituencyList(
+    // const constituency = await this.electionInstance.constituencyList(
+    //   this.props.currentConstId
+    // );
+    // const count = constituency[2];
+    // const arr = [];
+    // var i;
+    // for (i = 0; i < count; i++) {
+    //   const candidate = await this.electionInstance.candidatesInformation(
+    //     this.props.currentConstId,
+    //     i
+    //   );
+    //   arr.push(candidate);
+    // }
+    // this.setState({ candArr: arr });
+
+    // Get the file hash from the blockchain
+    //
+    const fileHash = await this.electionInstance.constituencyFileHash(
       this.props.currentConstId
     );
-    const count = constituency[2];
-    const arr = [];
-    var i;
-    for (i = 0; i < count; i++) {
-      const candidate = await this.electionInstance.candidatesInformation(
-        this.props.currentConstId,
-        i
-      );
-      arr.push(candidate);
-    }
-    this.setState({ candArr: arr });
+    alert(fileHash);
+
+    // const res = await axios.get(
+    //   "https://ipfs.infura.io/ipfs/QmS4Vy1kqQ2Q6PHsjULrWfqp5ZdXaDE7R8TL1uaV4WYTV9"
+    // );
     // alert(arr);
   }
   confirmVote(event) {
@@ -121,13 +132,13 @@ export default class Vote extends React.Component {
           <td>{count}</td>
           <td>{this.state.candArr[loop][1]}</td>
           <td>{loop}</td>
-          <td className="text-center">
+          <td className='text-center'>
             <Button
               id={loop}
               value={this.state.candArr[loop][1]}
               style={buttonStyle}
-              size="sm"
-              className="btn-success"
+              size='sm'
+              className='btn-success'
               onClick={this.confirmVote}
             >
               VOTE
@@ -141,13 +152,13 @@ export default class Vote extends React.Component {
     return (
       <div>
         <div style={{ marginTop: "15px" }}>
-          <h2 className="text-center">Please cast your vote</h2>
+          <h2 className='text-center'>Please cast your vote</h2>
         </div>
         <br />
         <div style={tableDivStyle}>
           <Table bordered>
             <thead>
-              <tr className="text-center">
+              <tr className='text-center'>
                 <th>Sl No.</th>
                 <th>Name</th>
                 <th>ID</th>
@@ -169,10 +180,10 @@ export default class Vote extends React.Component {
               </ModalBody>
 
               <ModalFooter>
-                <Button className="btn-success" onClick={this.submitVote}>
+                <Button className='btn-success' onClick={this.submitVote}>
                   Confirm Vote
                 </Button>
-                <Button onClick={this.cancelVote} className="btn-danger">
+                <Button onClick={this.cancelVote} className='btn-danger'>
                   Cancel
                 </Button>
               </ModalFooter>
@@ -185,7 +196,7 @@ export default class Vote extends React.Component {
             <b>{this.state.votedCandidateName}</b>
           </ModalHeader>
           <ModalFooter>
-            <Button className="btn-success" onClick={this.completedVoting}>
+            <Button className='btn-success' onClick={this.completedVoting}>
               Okay
             </Button>
           </ModalFooter>
