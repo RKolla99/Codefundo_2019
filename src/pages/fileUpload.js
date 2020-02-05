@@ -52,11 +52,11 @@ export default class fileUpload extends React.Component {
     };
   }
   async componentDidMount() {
-    const res = await axios.get(
-      "https://ipfs.infura.io/ipfs/QmS4Vy1kqQ2Q6PHsjULrWfqp5ZdXaDE7R8TL1uaV4WYTV9"
-    );
-
-    alert(res.data);
+    // const res = await axios.get(
+    //   "https://ipfs.infura.io/ipfs/QmS4Vy1kqQ2Q6PHsjULrWfqp5ZdXaDE7R8TL1uaV4WYTV9"
+    // );
+    // alert(res.data);
+    // QmY8buW6czo4djpYnXfNW532V26ypVYG3nHciuPcBG3y3q
   }
   onSubmit(event) {
     console.log(this.props.ipfs);

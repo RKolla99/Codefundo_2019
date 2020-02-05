@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import {
   Table,
   Button,
@@ -35,7 +36,9 @@ export default class Vote extends React.Component {
       tempCandidateID: "",
       voteSuccessModal: false,
       web3: this.props.myweb3,
-      account: "0x0"
+      account: "0x0",
+      constInfo: null,
+      candidateInfo: []
     };
 
     this.confirmVote = this.confirmVote.bind(this);
@@ -46,36 +49,50 @@ export default class Vote extends React.Component {
     this.election = this.props.mycon;
   }
   async componentDidMount() {
-    this.state.web3.eth.getCoinbase((err, account) => {
-      this.setState({ account });
-    });
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      this.election.setProvider(window.ethereum);
+      await window.ethereum.enable();
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
+      this.election.setProvider(window.web3.currentProvider);
+    } else {
+      window.alert(
+        "Non-Ethereum browser detected. You should consider trying MetaMask!"
+      );
+    }
+
+    const web3 = window.web3;
+    const accounts = await web3.eth.getAccounts();
+
+    this.setState({ account: accounts[0] });
+    alert(this.state.account);
+
     this.electionInstance = await this.election.deployed();
-    // const constituency = await this.electionInstance.constituencyList(
-    //   this.props.currentConstId
-    // );
-    // const count = constituency[2];
-    // const arr = [];
-    // var i;
-    // for (i = 0; i < count; i++) {
-    //   const candidate = await this.electionInstance.candidatesInformation(
-    //     this.props.currentConstId,
-    //     i
-    //   );
-    //   arr.push(candidate);
-    // }
-    // this.setState({ candArr: arr });
 
     // Get the file hash from the blockchain
-    //
+
+    // currnt testing hash - QmY8buW6czo4djpYnXfNW532V26ypVYG3nHciuPcBG3y3q
+
     const fileHash = await this.electionInstance.constituencyFileHash(
       this.props.currentConstId
     );
-    alert(fileHash);
+    // alert(fileHash);
 
-    // const res = await axios.get(
-    //   "https://ipfs.infura.io/ipfs/QmS4Vy1kqQ2Q6PHsjULrWfqp5ZdXaDE7R8TL1uaV4WYTV9"
-    // );
-    // alert(arr);
+    const fileURL = "https://ipfs.infura.io/ipfs/" + fileHash;
+    var res = await axios.get(fileURL);
+    res = res.data.split("\n");
+    console.log(res);
+    var constInfo = res[1];
+    res.splice(0, 2);
+    for (var i = 0; i < res.length; i++) {
+      res[i] = res[i].split(",");
+    }
+    var candidateInfo = res;
+    console.log(constInfo);
+    console.log(candidateInfo);
+    this.setState({ constInfo });
+    this.setState({ candidateInfo });
   }
   confirmVote(event) {
     const cand_name = event.target.value;
@@ -95,10 +112,10 @@ export default class Vote extends React.Component {
   }
 
   async submitVote() {
+    // alert(this.state.account);
     await this.electionInstance.vote(
       this.state.tempCandidateID,
       this.props.currentAdhaar,
-      this.props.currentConstId,
       {
         from: this.state.account
       }
@@ -125,17 +142,17 @@ export default class Vote extends React.Component {
   render() {
     var candidates_arr = [];
     var count = 1;
-    var candidateArrLength = this.state.candArr.length;
-    for (var loop = 0; loop < candidateArrLength; loop++) {
+    var candidateArrLength = this.state.candidateInfo.length;
+    for (var loop = 1; loop < candidateArrLength; loop++) {
       candidates_arr.push(
-        <tr key={loop + 1}>
+        <tr key={loop}>
           <td>{count}</td>
-          <td>{this.state.candArr[loop][1]}</td>
-          <td>{loop}</td>
+          <td>{this.state.candidateInfo[loop][1]}</td>
+          <td>{this.state.candidateInfo[loop][0]}</td>
           <td className='text-center'>
             <Button
-              id={loop}
-              value={this.state.candArr[loop][1]}
+              id={this.state.candidateInfo[loop][0]}
+              value={this.state.candidateInfo[loop][1]}
               style={buttonStyle}
               size='sm'
               className='btn-success'

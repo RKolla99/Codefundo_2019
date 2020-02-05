@@ -38,13 +38,27 @@ export default class AdminLogin extends React.Component {
     // this.testing = this.testing.bind(this);
   }
 
-  componentDidMount() {
-    this.state.web3.eth.getCoinbase((err, account) => {
-      this.setState({ account });
-      this.election.deployed().then(electionInstance => {
-        this.electionInstance = electionInstance;
-      });
-    });
+  async componentDidMount() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      this.election.setProvider(window.ethereum);
+      await window.ethereum.enable();
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
+      this.election.setProvider(window.web3.currentProvider);
+    } else {
+      window.alert(
+        "Non-Ethereum browser detected. You should consider trying MetaMask!"
+      );
+    }
+
+    const web3 = window.web3;
+    const accounts = await web3.eth.getAccounts();
+
+    this.setState({ account: accounts[0] });
+    // alert(this.state.account);
+
+    this.electionInstance = await this.election.deployed();
   }
 
   // testing() {
@@ -86,9 +100,9 @@ export default class AdminLogin extends React.Component {
     // }
 
     return (
-      <div style={style} className="text-center">
+      <div style={style} className='text-center'>
         <div>
-          <h2 className="text-center" style={{ fontFamily: "sans-serif" }}>
+          <h2 className='text-center' style={{ fontFamily: "sans-serif" }}>
             Sign In to add Constituencies and Candidates
           </h2>
         </div>
@@ -96,16 +110,16 @@ export default class AdminLogin extends React.Component {
         <div style={groupStyle}>
           <div>
             <label style={{ margin: "5px" }}>Username</label>
-            <input id="username" type="text" />
+            <input id='username' type='text' />
             <br />
             <br />
             <label style={{ margin: "5px" }}>Password</label>
-            <input id="password" type="password" />
+            <input id='password' type='password' />
           </div>
           <br />
           <div>
             <button
-              className="btn btn-success"
+              className='btn btn-success'
               style={{ fontFamily: "monospace" }}
               onClick={this.login}
             >
@@ -118,7 +132,7 @@ export default class AdminLogin extends React.Component {
             <Modal isOpen={this.state.userNotValid}>
               <ModalHeader> Username or password is incorrect! </ModalHeader>
               <ModalFooter>
-                <Button className="btn-retry" onClick={this.toggleUserNotValid}>
+                <Button className='btn-retry' onClick={this.toggleUserNotValid}>
                   Retry
                 </Button>
               </ModalFooter>

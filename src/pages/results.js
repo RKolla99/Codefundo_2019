@@ -25,13 +25,27 @@ export default class Results extends React.Component {
     this.election = this.props.mycon;
     this.goHome = this.goHome.bind(this);
   }
-  componentDidMount() {
-    this.state.web3.eth.getCoinbase((err, account) => {
-      this.setState({ account });
-      this.election.deployed().then(electionInstance => {
-        this.electionInstance = electionInstance;
-      });
-    });
+  async componentDidMount() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      this.election.setProvider(window.ethereum);
+      await window.ethereum.enable();
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
+      this.election.setProvider(window.web3.currentProvider);
+    } else {
+      window.alert(
+        "Non-Ethereum browser detected. You should consider trying MetaMask!"
+      );
+    }
+
+    const web3 = window.web3;
+    const accounts = await web3.eth.getAccounts();
+
+    this.setState({ account: accounts[0] });
+    // alert(this.state.account);
+
+    this.electionInstance = await this.election.deployed();
   }
   timerCompleted() {
     this.setState({
@@ -78,11 +92,11 @@ export default class Results extends React.Component {
   render() {
     return (
       <div>
-        <div className="text-center">
-          <h2 className="display-4">Results to be declared in</h2>
-          <h1 className="display-1">
+        <div className='text-center'>
+          <h2 className='display-4'>Results to be declared in</h2>
+          <h1 className='display-1'>
             <Countdown
-              key="resultsTimer"
+              key='resultsTimer'
               onMount={this.timerMounted}
               date={this.state.startTime + this.state.duration}
               onComplete={this.timerCompleted}
@@ -97,19 +111,19 @@ export default class Results extends React.Component {
         </div>
         {this.state.checkResults && (
           <div
-            className="text-center"
+            className='text-center'
             style={{ padding: "10px", margin: "5px" }}
           >
             <Button
               disabled={this.state.resultsButtonDisabled}
-              className="btn-warning"
+              className='btn-warning'
               onClick={this.checkResults}
             >
               Check Results
             </Button>
 
             <Button
-              className="btn-primary"
+              className='btn-primary'
               style={{ margin: "5px" }}
               onClick={this.goHome}
             >
@@ -118,19 +132,19 @@ export default class Results extends React.Component {
           </div>
         )}
         {!this.state.checkResults && (
-          <div className="text-center" style={{ padding: "10px" }}>
+          <div className='text-center' style={{ padding: "10px" }}>
             <label style={{ paddingRight: "5px" }}>Constituency ID</label>
-            <input maxLength="4" size="4" id="constituencyId" />
+            <input maxLength='4' size='4' id='constituencyId' />
             <div style={{ paddingTop: "10px" }}>
-              <Button size="sm" onClick={this.showWinner}>
+              <Button size='sm' onClick={this.showWinner}>
                 CHECK
               </Button>
             </div>
           </div>
         )}
         {this.state.showWinner && (
-          <div className="text-center">
-            <h2 className="display-4">
+          <div className='text-center'>
+            <h2 className='display-4'>
               The winner is <b>{this.state.winnerName}</b>
             </h2>
           </div>
