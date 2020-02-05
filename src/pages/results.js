@@ -1,7 +1,41 @@
 import React from "react";
-import { Button } from "reactstrap";
+import axios from "axios";
+import {
+  InputGroup,
+  Button,
+  Label,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Table
+} from "reactstrap";
 import Countdown, { zeroPad } from "react-countdown-now";
+const labelStyle = {
+  display: "inline-block",
+  width: "140px",
+  padding: "5px"
+};
+const tableDivStyle = {
+  padding: "10px",
+  margin: "10px auto 10px auto",
+  boxShadow: "0px 5px 15px 2px #000",
+  width: "70%",
+  background: "#fff"
+};
 
+const inputStyle = {
+  display: "inline-block"
+  // fontFamily:'monospace',
+};
+
+const containerStyle = {
+  margin: "10px auto 10px auto",
+  padding: "10px 5px 15px 5px",
+  // boxShadow: "0px 5px 10px 2px #000",
+  width: "500px",
+  background: "#fff"
+};
 export default class Results extends React.Component {
   constructor(props) {
     super(props);
@@ -15,7 +49,12 @@ export default class Results extends React.Component {
       showWinner: false,
       web3: this.props.myweb3,
       account: "0x0",
-      winnerName: ""
+      winnerName: "",
+      constituencyId: null,
+      constInfo: null,
+      candidateInfo: null,
+      gotVoteCount: false,
+      resTable: null
     };
     this.timerMounted = this.timerMounted.bind(this);
     this.timerCompleted = this.timerCompleted.bind(this);
@@ -24,6 +63,8 @@ export default class Results extends React.Component {
     this.getWinnerName = this.getWinnerName.bind(this);
     this.election = this.props.mycon;
     this.goHome = this.goHome.bind(this);
+    this.getConstituencyInfo = this.getConstituencyInfo.bind(this);
+    this.getVoteInfo = this.getVoteInfo.bind(this);
   }
   async componentDidMount() {
     if (window.ethereum) {
@@ -60,17 +101,85 @@ export default class Results extends React.Component {
     });
   }
 
+  async getConstituencyInfo() {
+    // Get file hash
+    const fileHash = await this.electionInstance.constituencyFileHash(
+      this.state.constituencyId
+    );
+    // alert(fileHash);
+
+    const fileURL = "https://ipfs.infura.io/ipfs/" + fileHash;
+    var res = await axios.get(fileURL);
+    res = res.data.split("\n");
+    console.log(res);
+    var constInfo = res[1];
+    res.splice(0, 2);
+    for (var i = 0; i < res.length; i++) {
+      res[i] = res[i].split(",");
+    }
+    var candidateInfo = res;
+    // console.log(constInfo);
+    // console.log(candidateInfo);
+    this.setState({ constInfo });
+    this.setState({ candidateInfo });
+  }
+
+  async getVoteInfo() {
+    var candidateInfo = this.state.candidateInfo;
+    var candidateId;
+    var votecount;
+    for (var i = 1; i < candidateInfo.length; i++) {
+      candidateId = parseInt(candidateInfo[i][0], 10);
+      votecount = await this.electionInstance.returnVoteCount(candidateId);
+      candidateInfo[i].push(parseInt(votecount, 10));
+    }
+    console.log(candidateInfo);
+    var resTable = [];
+    var count = 1;
+    var candidateArrLength = this.state.candidateInfo.length;
+    for (var loop = 1; loop < candidateArrLength; loop++) {
+      resTable.push(
+        <tr key={loop}>
+          <td>{count}</td>
+          <td>{this.state.candidateInfo[loop][1]}</td>
+          <td>{this.state.candidateInfo[loop][0]}</td>
+          <td className='text-center'>{candidateInfo[loop][3]}</td>
+        </tr>
+      );
+      count++;
+    }
+
+    await this.setState({
+      candidateInfo: candidateInfo,
+      gotVoteCount: true,
+      resTable: resTable
+    });
+  }
+
   async showWinner() {
     const constituencyId = parseInt(
       document.getElementById("constituencyId").value,
       10
     );
+    await this.setState({ constituencyId: constituencyId });
 
-    const name = await this.electionInstance.returnWinner(constituencyId);
+    // Get the candidate info for the particular constituency
+    await this.getConstituencyInfo();
+    // Get the vote counts
+    await this.getVoteInfo();
+    // Get the winner
+    var maxVotes = 0;
+    var winnerName;
+    for (var i = 1; i < this.state.candidateInfo.length; i++) {
+      if (this.state.candidateInfo[i][3] > maxVotes) {
+        winnerName = this.state.candidateInfo[i][1];
+      }
+    }
+
     this.setState({
       constituencyId: constituencyId,
       showWinner: true,
-      winnerName: name
+      winnerName: winnerName
     });
   }
 
@@ -114,6 +223,9 @@ export default class Results extends React.Component {
             className='text-center'
             style={{ padding: "10px", margin: "5px" }}
           >
+            <br />
+            <br />
+            <span>&nbsp;&nbsp;&nbsp;</span>
             <Button
               disabled={this.state.resultsButtonDisabled}
               className='btn-warning'
@@ -121,7 +233,7 @@ export default class Results extends React.Component {
             >
               Check Results
             </Button>
-
+            <span>&nbsp;&nbsp;&nbsp;</span>
             <Button
               className='btn-primary'
               style={{ margin: "5px" }}
@@ -140,6 +252,21 @@ export default class Results extends React.Component {
                 CHECK
               </Button>
             </div>
+          </div>
+        )}
+        {this.state.gotVoteCount && (
+          <div style={tableDivStyle}>
+            <Table bordered>
+              <thead>
+                <tr className='text-center'>
+                  <th>Sl No.</th>
+                  <th>Name</th>
+                  <th>ID</th>
+                  <th>Vote count</th>
+                </tr>
+              </thead>
+              <tbody>{this.state.resTable}</tbody>
+            </Table>
           </div>
         )}
         {this.state.showWinner && (
