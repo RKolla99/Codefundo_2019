@@ -10,12 +10,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.19.2",
+    "ipfs-http-client": "^33.1.1",
     "react": "^16.9.0",
     "react-countdown-now": "^2.1.1",
     "react-dom": "^16.9.0",
     "react-icons": "^3.7.0",
     "reactstrap": "^8.0.1",
-    "truffle-hdwallet-provider": "^1.0.16"
+    "truffle-hdwallet-provider": "^1.0.16",
+    "web3": "^1.0.0-beta.55"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
@@ -25,7 +28,6 @@
     "babel-polyfill": "^6.26.0",
     "html-webpack-plugin": "^3.2.0",
     "truffle-contract": "^3.0.4",
-    "web3": "^0.20.5",
     "webpack": "^4.39.2",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.8.0"

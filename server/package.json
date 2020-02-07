@@ -1,0 +1,24 @@
+{
+    "name": "expressserver",
+    "version": "1.0.0",
+    "description": "An Express server for serving content to the Indian Election voting app",
+    "main": "index.js",
+    "scripts": {
+        "start": "node server",
+        "server": "nodemon server"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@hapi/joi": "^17.1.0",
+        "@hapi/joi-date": "^2.0.1",
+        "config": "^3.2.5",
+        "cors": "^2.8.5",
+        "express": "^4.17.1",
+        "express-joi-validation": "^4.0.3",
+        "mongoose": "^5.8.10"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.2"
+    }
+}

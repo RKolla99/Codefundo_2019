@@ -1,40 +1,21 @@
 pragma solidity ^0.5.0;
 
-contract IndianElection {
+contract Elections {
+
     struct Candidate {
-        uint256 candidateId;
-        uint256 candidateVoteCount;
+        uint candidateId;
+        uint candidateVoteCount;
     }
 
-    mapping(uint256 => Candidate) public candidatesList;
+    mapping(uint => Candidate) public candidatesList;
     mapping(uint256 => bool) public voterEntry;
     mapping(string => bytes32) adminCredentials;
-
-    mapping(uint256 => string) public constituencyFileHash;
-    mapping(uint256 => string) public voterListHash;
-
-    // Set constituency file hash
-    function setConstituencyFileHash(uint256 constId, string memory fileHash)
-        public
-    {
-        constituencyFileHash[constId] = fileHash;
-    }
-
-    // Set voter list file hashes
-    function setVoterListFileHash(uint256 constId, string memory fileHash)
-        public
-    {
-        voterListHash[constId] = fileHash;
-    }
 
     function addAdmin(string memory username, string memory password) public {
         adminCredentials[username] = keccak256(abi.encodePacked(password));
     }
 
-    function verifyAdmin(string memory username, string memory password)
-        public
-        view
-        returns (bool)
+    function verifyAdmin(string memory username, string memory password) public view returns (bool)
     {
         bytes32 stored = adminCredentials[username];
         bytes32 given = keccak256(abi.encodePacked(password));
@@ -53,11 +34,7 @@ contract IndianElection {
         candidatesList[_candidateId].candidateVoteCount += 1;
     }
 
-    function returnVoteCount(uint256 _candidateId)
-        public
-        view
-        returns (uint256)
-    {
+    function returnVoteCount(uint256 _candidateId) public view returns(uint256) {
         return candidatesList[_candidateId].candidateVoteCount;
     }
 }
