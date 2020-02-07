@@ -38,7 +38,8 @@ export default class Vote extends React.Component {
       web3: this.props.myweb3,
       account: "0x0",
       constInfo: null,
-      candidateInfo: []
+      candidateInfo: [],
+      adhaar: 0
     };
 
     this.confirmVote = this.confirmVote.bind(this);
@@ -49,6 +50,11 @@ export default class Vote extends React.Component {
     this.election = this.props.mycon;
   }
   async componentDidMount() {
+    const constId = this.props.getConstId();
+    const adhaar = this.props.getAdhaar();
+    // alert(constId);
+    // alert(adhaar);
+    this.setState({ adhaar: adhaar });
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
       this.election.setProvider(window.ethereum);
@@ -66,7 +72,7 @@ export default class Vote extends React.Component {
     const accounts = await web3.eth.getAccounts();
 
     this.setState({ account: accounts[0] });
-    alert(this.state.account);
+    // alert(this.state.account);
 
     this.electionInstance = await this.election.deployed();
 
@@ -74,9 +80,7 @@ export default class Vote extends React.Component {
 
     // currnt testing hash - QmY8buW6czo4djpYnXfNW532V26ypVYG3nHciuPcBG3y3q
 
-    const fileHash = await this.electionInstance.constituencyFileHash(
-      this.props.currentConstId
-    );
+    const fileHash = await this.electionInstance.constituencyFileHash(constId);
     // alert(fileHash);
 
     const fileURL = "https://ipfs.infura.io/ipfs/" + fileHash;
@@ -115,7 +119,7 @@ export default class Vote extends React.Component {
     // alert(this.state.account);
     await this.electionInstance.vote(
       this.state.tempCandidateID,
-      this.props.currentAdhaar,
+      this.state.adhaar,
       {
         from: this.state.account
       }
