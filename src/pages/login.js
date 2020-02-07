@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   InputGroup,
   Button,
@@ -7,13 +7,15 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter
-} from "reactstrap";
+} from 'reactstrap';
 // import { Redirect } from "react-router-dom";
-import { IoIosCheckmarkCircleOutline } from "react-icons/io";
+import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
+import axios from 'axios';
+
 const labelStyle = {
-  display: "inline-block",
-  width: "140px",
-  padding: "5px"
+  display: 'inline-block',
+  width: '140px',
+  padding: '5px'
 };
 
 const inputStyle = {
@@ -22,11 +24,11 @@ const inputStyle = {
 };
 
 const containerStyle = {
-  margin: "10px auto 10px auto",
-  padding: "10px 5px 15px 5px",
+  margin: '10px auto 10px auto',
+  padding: '10px 5px 15px 5px',
   // boxShadow: "0px 5px 10px 2px #000",
-  width: "500px",
-  background: "#fff"
+  width: '500px',
+  background: '#fff'
 };
 
 export default class VoterLogin extends React.Component {
@@ -48,19 +50,35 @@ export default class VoterLogin extends React.Component {
     this.toggleHasVoted = this.toggleHasVoted.bind(this);
   }
 
-  componentDidMount() {
-    this.state.web3.eth.getCoinbase((err, account) => {
-      this.setState({ account });
-      this.election.deployed().then(electionInstance => {
-        this.electionInstance = electionInstance;
-      });
-    });
+  async componentDidMount() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      this.election.setProvider(window.ethereum);
+      await window.ethereum.enable();
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
+      this.election.setProvider(window.web3.currentProvider);
+    } else {
+      window.alert(
+        'Non-Ethereum browser detected. You should consider trying MetaMask!'
+      );
+    }
+
+    const web3 = window.web3;
+    const accounts = await web3.eth.getAccounts();
+
+    this.setState({ account: accounts[0] });
+    // alert(this.state.account);
+
+    this.electionInstance = await this.election.deployed();
+
+    // alert(this.state.account);
   }
 
   scannerModal(event) {
     var temp;
-    if (event.target.id === "scan_fingerprint") temp = "fingerprint";
-    else if (event.target.id === "scan_retina") temp = "retina";
+    if (event.target.id === 'scan_fingerprint') temp = 'fingerprint';
+    else if (event.target.id === 'scan_retina') temp = 'retina';
 
     this.setState({
       showScannerModal: true,
@@ -78,19 +96,18 @@ export default class VoterLogin extends React.Component {
     this.setState({
       userNotMatch: false
     });
-    document.getElementById("aadhar1").value = "";
-    document.getElementById("aadhar2").value = "";
-    document.getElementById("aadhar3").value = "";
-    document.getElementById("const_id").value = "";
+    document.getElementById('aadhar1').value = '';
+    document.getElementById('aadhar2').value = '';
+    document.getElementById('aadhar3').value = '';
   }
 
   saveScan(event) {
-    const scanVal = document.getElementById("scan").value;
-    if (this.state.tempScan === "fingerprint") {
+    const scanVal = document.getElementById('scan').value;
+    if (this.state.tempScan === 'fingerprint') {
       this.setState({
         fingerprint: scanVal
       });
-    } else if (this.state.tempScan === "retina") {
+    } else if (this.state.tempScan === 'retina') {
       this.setState({
         retina: scanVal
       });
@@ -106,42 +123,41 @@ export default class VoterLogin extends React.Component {
 
   async submit() {
     if (this.state.fingerprint === undefined) {
-      console.error("Fingerprint not scanned!!");
+      console.error('Fingerprint not scanned!!');
     }
     if (this.state.retina === undefined) {
-      console.error("Retina not scanned!!");
+      console.error('Retina not scanned!!');
     } else {
-      var aadharNumber = document.getElementById("aadhar1").value;
-      aadharNumber += document.getElementById("aadhar2").value;
-      (aadharNumber += document.getElementById("aadhar3").value), 10;
+      var aadharNumber = document.getElementById('aadhar1').value;
+      aadharNumber += document.getElementById('aadhar2').value;
+      (aadharNumber += document.getElementById('aadhar3').value), 10;
       aadharNumber = parseInt(aadharNumber, 10);
 
-      const const_id = parseInt(document.getElementById("const_id").value, 10);
       const hasVoted = await this.electionInstance.voterEntry(aadharNumber);
       if (!hasVoted) {
-        const verify = await this.electionInstance.verifyVoter(
-          aadharNumber,
-          parseInt(this.state.fingerprint, 10),
-          parseInt(this.state.retina, 10),
-          const_id
+        const verify = await axios.post(
+          'http://localhost:5000/api/aadhaaruser',
+          {
+            aadhaarNumber: aadharNumber,
+            fingerprint: this.state.fingerprint,
+            retinal: this.state.retina
+          }
         );
-        if (verify) {
-          await this.electionInstance.setVerifiedVoter(
-            aadharNumber,
-            parseInt(this.state.fingerprint, 10),
-            parseInt(this.state.retina, 10),
-            const_id,
-            {
-              from: this.state.account
-            }
+        console.log(verify);
+
+        if (verify.data.validated) {
+          const get_const_id = await axios.get(
+            `http://localhost:5000/api/aadhaaruser/${aadharNumber}`
           );
+          const const_id = get_const_id.data.constituencyId;
           this.setState({
             aadhar: aadharNumber,
             validUser: true //uncomment line while testing
           });
           this.props.aadhar(aadharNumber);
-          this.props.pageindex(3);
           this.props.constid(const_id);
+          console.log(const_id, aadharNumber);
+          this.props.pageindex(3);
         } else {
           this.setState({
             userNotMatch: true
@@ -161,10 +177,10 @@ export default class VoterLogin extends React.Component {
     }
 
     return (
-      <div className="">
-        <div className="text-center">
+      <div className=''>
+        <div className='text-center'>
           <div>
-            <h1 className="display-4" style={{ fontFamily: "monospace" }}>
+            <h1 className='display-4' style={{ fontFamily: 'monospace' }}>
               Enter your details
             </h1>
           </div>
@@ -172,67 +188,57 @@ export default class VoterLogin extends React.Component {
 
           <div style={containerStyle}>
             <div>
-              <InputGroup style={{ paddingBottom: "10px" }}>
-                <Label for="aadhar1" style={labelStyle}>
+              <InputGroup style={{ paddingBottom: '10px' }}>
+                <Label for='aadhar1' style={labelStyle}>
                   Aadhar Number
                 </Label>
                 <input
-                  id="aadhar1"
-                  placeholder="XXXX"
+                  id='aadhar1'
+                  placeholder='XXXX'
                   style={inputStyle}
-                  size="4"
-                  maxLength="4"
+                  size='4'
+                  maxLength='4'
                 />
-                <span className="align-bottom">&nbsp; - &nbsp;</span>
+                <span className='align-bottom'>&nbsp; - &nbsp;</span>
                 <input
-                  id="aadhar2"
-                  placeholder="XXXX"
+                  id='aadhar2'
+                  placeholder='XXXX'
                   style={inputStyle}
-                  size="4"
-                  maxLength="4"
+                  size='4'
+                  maxLength='4'
                 />
                 <span>&nbsp; - &nbsp;</span>
                 <input
-                  id="aadhar3"
-                  placeholder="XXXX"
+                  id='aadhar3'
+                  placeholder='XXXX'
                   style={inputStyle}
-                  size="4"
-                  maxLength="4"
+                  size='4'
+                  maxLength='4'
                 />
               </InputGroup>
             </div>
             <br />
             <div>
               <InputGroup>
-                <Label for="const_id" style={labelStyle}>
-                  Constituency ID
-                </Label>
-                <input
-                  id="const_id"
-                  placeholder="XXXX"
-                  style={inputStyle}
-                  size="4"
-                  maxLength="4"
-                />
-              </InputGroup>
-            </div>
-            <br />
-            <div>
-              <InputGroup>
-                <Label for="scan_fingerprint" style={labelStyle}>
+                <Label for='scan_fingerprint' style={labelStyle}>
                   Fingerprint
                 </Label>
                 <Button
-                  id="scan_fingerprint"
-                  size="sm"
+                  id='scan_fingerprint'
+                  size='sm'
                   onClick={this.scannerModal}
                 >
-                  {" "}
-                  SCAN{" "}
+                  {' '}
+                  SCAN{' '}
                 </Button>
                 {this.state.fingerprint && (
-                  <div style={{ paddingTop: "5px", width: "30px" }}>
-                    <IoIosCheckmarkCircleOutline size="30" />
+                  <div
+                    style={{
+                      paddingTop: '5px',
+                      width: '30px'
+                    }}
+                  >
+                    <IoIosCheckmarkCircleOutline size='30' />
                   </div>
                 )}
               </InputGroup>
@@ -240,21 +246,26 @@ export default class VoterLogin extends React.Component {
             <br />
             <div>
               <InputGroup>
-                <Label for="scan_retina" style={labelStyle}>
+                <Label for='scan_retina' style={labelStyle}>
                   Retina
                 </Label>
                 <Button
-                  id="scan_retina"
-                  size="sm"
+                  id='scan_retina'
+                  size='sm'
                   onClick={this.scannerModal}
-                  style={{ marginRight: "2px" }}
+                  style={{ marginRight: '2px' }}
                 >
-                  {" "}
-                  SCAN{" "}
+                  {' '}
+                  SCAN{' '}
                 </Button>
                 {this.state.retina && (
-                  <div style={{ paddingTop: "5px", width: "30px" }}>
-                    <IoIosCheckmarkCircleOutline size="30" />
+                  <div
+                    style={{
+                      paddingTop: '5px',
+                      width: '30px'
+                    }}
+                  >
+                    <IoIosCheckmarkCircleOutline size='30' />
                   </div>
                 )}
               </InputGroup>
@@ -265,30 +276,30 @@ export default class VoterLogin extends React.Component {
                 <ModalBody>
                   <span>Number </span>
                   <input
-                    id="scan"
-                    placeholder="XXXX"
+                    id='scan'
+                    placeholder='XXXX'
                     style={inputStyle}
-                    size="4"
-                    maxLength="4"
+                    size='4'
+                    maxLength='4'
                   />
                 </ModalBody>
                 <ModalFooter>
-                  <div className="text-center" style={{ width: "100%" }}>
-                    <Button id="done" size="sm" onClick={this.saveScan}>
-                      {" "}
-                      DONE{" "}
+                  <div className='text-center' style={{ width: '100%' }}>
+                    <Button id='done' size='sm' onClick={this.saveScan}>
+                      {' '}
+                      DONE{' '}
                     </Button>
                   </div>
                 </ModalFooter>
               </Modal>
             </div>
             <br />
-            <div className="text-center">
+            <div className='text-center'>
               <Button
-                id="submit"
+                id='submit'
                 onClick={this.submit}
-                className="btn-success"
-                style={{ fontFamily: "monospace" }}
+                className='btn-success'
+                style={{ fontFamily: 'monospace' }}
               >
                 SUBMIT
               </Button>
@@ -300,7 +311,7 @@ export default class VoterLogin extends React.Component {
                 <ModalHeader> Details does not match!! </ModalHeader>
                 <ModalFooter>
                   <Button
-                    className="btn-retry"
+                    className='btn-retry'
                     onClick={this.toggleUserNotMatch}
                   >
                     Retry
@@ -314,7 +325,7 @@ export default class VoterLogin extends React.Component {
               <Modal isOpen={this.state.hasVoted}>
                 <ModalHeader> You've already voted!! </ModalHeader>
                 <ModalFooter>
-                  <Button className="btn-retry" onClick={this.toggleHasVoted}>
+                  <Button className='btn-retry' onClick={this.toggleHasVoted}>
                     Return home
                   </Button>
                 </ModalFooter>

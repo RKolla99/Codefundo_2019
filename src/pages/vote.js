@@ -1,5 +1,6 @@
-import React from "react";
-import axios from "axios";
+import React from 'react';
+import axios from 'axios';
+import Web3 from 'web3';
 import {
   Table,
   Button,
@@ -7,18 +8,18 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader
-} from "reactstrap";
+} from 'reactstrap';
 
 const buttonStyle = {
-  width: "80px"
+  width: '80px'
 };
 
 const tableDivStyle = {
-  padding: "10px",
-  margin: "10px auto 10px auto",
-  boxShadow: "0px 5px 15px 2px #000",
-  width: "70%",
-  background: "#fff"
+  padding: '10px',
+  margin: '10px auto 10px auto',
+  boxShadow: '0px 5px 15px 2px #000',
+  width: '70%',
+  background: '#fff'
 };
 
 export default class Vote extends React.Component {
@@ -26,17 +27,17 @@ export default class Vote extends React.Component {
     super(props);
     this.state = {
       candidates: {
-        1: "John",
-        2: "Jake",
-        3: "Jane"
+        1: 'John',
+        2: 'Jake',
+        3: 'Jane'
       },
       candArr: [],
       confirmVoteModal: false,
-      tempCandidateName: "",
-      tempCandidateID: "",
+      tempCandidateName: '',
+      tempCandidateID: '',
       voteSuccessModal: false,
       web3: this.props.myweb3,
-      account: "0x0",
+      account: '0x0',
       constInfo: null,
       candidateInfo: [],
       adhaar: 0
@@ -64,7 +65,7 @@ export default class Vote extends React.Component {
       this.election.setProvider(window.web3.currentProvider);
     } else {
       window.alert(
-        "Non-Ethereum browser detected. You should consider trying MetaMask!"
+        'Non-Ethereum browser detected. You should consider trying MetaMask!'
       );
     }
 
@@ -83,14 +84,14 @@ export default class Vote extends React.Component {
     const fileHash = await this.electionInstance.constituencyFileHash(constId);
     // alert(fileHash);
 
-    const fileURL = "https://ipfs.infura.io/ipfs/" + fileHash;
+    const fileURL = 'https://ipfs.infura.io/ipfs/' + fileHash;
     var res = await axios.get(fileURL);
-    res = res.data.split("\n");
+    res = res.data.split('\n');
     console.log(res);
     var constInfo = res[1];
     res.splice(0, 2);
     for (var i = 0; i < res.length; i++) {
-      res[i] = res[i].split(",");
+      res[i] = res[i].split(',');
     }
     var candidateInfo = res;
     console.log(constInfo);
@@ -134,8 +135,8 @@ export default class Vote extends React.Component {
 
   cancelVote() {
     this.setState({
-      tempCandidateName: "",
-      tempCandidateID: ""
+      tempCandidateName: '',
+      tempCandidateID: ''
     });
     this.toggle();
   }
@@ -172,7 +173,7 @@ export default class Vote extends React.Component {
 
     return (
       <div>
-        <div style={{ marginTop: "15px" }}>
+        <div style={{ marginTop: '15px' }}>
           <h2 className='text-center'>Please cast your vote</h2>
         </div>
         <br />
@@ -191,12 +192,12 @@ export default class Vote extends React.Component {
           <div>
             <Modal isOpen={this.state.confirmVoteModal} toggle={this.toggle}>
               <ModalHeader toggle={this.toggle}>
-                {" "}
-                Confirm your vote!{" "}
+                {' '}
+                Confirm your vote!{' '}
               </ModalHeader>
 
               <ModalBody>
-                Are you sure you want to cast your vote to{" "}
+                Are you sure you want to cast your vote to{' '}
                 <b>{this.state.tempCandidateName}</b> ?
               </ModalBody>
 
@@ -213,7 +214,7 @@ export default class Vote extends React.Component {
         </div>
         <Modal isOpen={this.state.voteSuccessModal}>
           <ModalHeader>
-            Your vote has been successfully casted to{" "}
+            Your vote has been successfully casted to{' '}
             <b>{this.state.votedCandidateName}</b>
           </ModalHeader>
           <ModalFooter>

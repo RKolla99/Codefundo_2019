@@ -11,12 +11,20 @@ contract IndianElection {
     mapping(string => bytes32) adminCredentials;
 
     mapping(uint256 => string) public constituencyFileHash;
+    mapping(uint256 => string) public voterListHash;
 
     // Set constituency file hash
     function setConstituencyFileHash(uint256 constId, string memory fileHash)
         public
     {
         constituencyFileHash[constId] = fileHash;
+    }
+
+    // Set voter list file hashes
+    function setVoterListFileHash(uint256 constId, string memory fileHash)
+        public
+    {
+        voterListHash[constId] = fileHash;
     }
 
     function addAdmin(string memory username, string memory password) public {

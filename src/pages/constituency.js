@@ -1,6 +1,6 @@
-import React from "react";
-import AddCandidate from "../components/addCandidate";
-import Web3 from "web3";
+import React from 'react';
+import AddCandidate from '../components/addCandidate';
+import Web3 from 'web3';
 import {
   Button,
   Label,
@@ -10,34 +10,34 @@ import {
   ModalFooter,
   ModalBody,
   Table
-} from "reactstrap";
+} from 'reactstrap';
 // import {Link} from 'react-router-dom';
 
 const constitutionStyle = {
-  width: "500px",
-  margin: "auto",
-  marginTop: "20%",
-  padding: "10px 10px 10px 10px",
+  width: '500px',
+  margin: 'auto',
+  marginTop: '20%',
+  padding: '10px 10px 10px 10px',
   // border: '1px black solid',
   // boxShadow: "0px 5px 10px 2px #000",
-  background: "#fff"
+  background: '#fff'
 };
 
 const labelStyle = {
-  display: "inline-block",
-  width: "180px",
-  padding: "5px"
+  display: 'inline-block',
+  width: '180px',
+  padding: '5px'
 };
 
 const alertStyle = {
-  width: "80%",
-  margin: "10px auto 15px auto"
+  width: '80%',
+  margin: '10px auto 15px auto'
 };
 
 const buttonsStyle = {
   // width: '40%',
-  margin: "10px auto 5px auto",
-  overflow: "auto"
+  margin: '10px auto 5px auto',
+  overflow: 'auto'
 };
 
 class Constituency extends React.Component {
@@ -52,7 +52,7 @@ class Constituency extends React.Component {
       submit: false,
       confirmSubmit: false,
       web3: this.props.myweb3,
-      account: "0x0"
+      account: '0x0'
       // blockNumber: 0
     };
     this.addConstituency = this.addConstituency.bind(this);
@@ -75,7 +75,7 @@ class Constituency extends React.Component {
       this.election.setProvider(window.web3.currentProvider);
     } else {
       window.alert(
-        "Non-Ethereum browser detected. You should consider trying MetaMask!"
+        'Non-Ethereum browser detected. You should consider trying MetaMask!'
       );
     }
 
@@ -93,8 +93,8 @@ class Constituency extends React.Component {
   }
 
   addConstituency() {
-    const const_name = document.getElementById("const_name").value;
-    const const_id = parseInt(document.getElementById("const_id").value, 10);
+    const const_name = document.getElementById('const_name').value;
+    const const_id = parseInt(document.getElementById('const_id').value, 10);
 
     this.electionInstance
       .addConstituency(const_id, const_name, 0, { from: this.state.account })
@@ -111,8 +111,8 @@ class Constituency extends React.Component {
 
   addCandidate() {
     if (this.state.addCandidate) {
-      const cand_name = document.getElementById("cand_name").value;
-      const cand_id = document.getElementById("cand_id").value;
+      const cand_name = document.getElementById('cand_name').value;
+      const cand_id = document.getElementById('cand_id').value;
 
       const candidate = {
         [cand_id]: cand_name
@@ -122,8 +122,8 @@ class Constituency extends React.Component {
         candidates: { ...this.state.candidates, ...candidate }
       });
 
-      document.getElementById("cand_name").value = "";
-      document.getElementById("cand_id").value = "";
+      document.getElementById('cand_name').value = '';
+      document.getElementById('cand_id').value = '';
     }
 
     this.setState({
@@ -203,8 +203,8 @@ class Constituency extends React.Component {
             </Alert>
           </div>
         )}
-        <div style={{ overflow: "auto" }}>
-          <div className='float-left' style={{ width: "50%" }}>
+        <div style={{ overflow: 'auto' }}>
+          <div className='float-left' style={{ width: '50%' }}>
             {this.state.addCandidate && (
               <div>
                 <AddCandidate />
@@ -222,9 +222,9 @@ class Constituency extends React.Component {
           </div>
           {this.state.addCandidate &&
             Object.keys(this.state.candidates).length > 0 && (
-              <div className='float-right' style={{ width: "50%" }}>
+              <div className='float-right' style={{ width: '50%' }}>
                 <div
-                  style={{ width: "60%", margin: "auto", background: "#fff" }}
+                  style={{ width: '60%', margin: 'auto', background: '#fff' }}
                 >
                   <Table hover>
                     <thead>
@@ -237,7 +237,7 @@ class Constituency extends React.Component {
                   </Table>
                 </div>
                 <div
-                  style={{ width: "60%", margin: "auto" }}
+                  style={{ width: '60%', margin: 'auto' }}
                   className='text-center'
                 >
                   <Button className='btn-success' onClick={this.confirmSubmit}>
