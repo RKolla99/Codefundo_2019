@@ -12,7 +12,7 @@
     "dependencies": {
         "@hapi/joi": "^17.1.0",
         "@hapi/joi-date": "^2.0.1",
-        "config": "^3.2.5",
+        "config": "^3.3.8",
         "cors": "^2.8.5",
         "express": "^4.17.1",
         "express-joi-validation": "^4.0.3",
